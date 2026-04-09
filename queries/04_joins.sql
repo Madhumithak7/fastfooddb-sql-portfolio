@@ -1,3 +1,6 @@
+-- ============================================
+-- JOIN DATA
+-- ============================================
 -- 1. Full order view
 SELECT
     o.order_number,
@@ -70,5 +73,32 @@ WHERE DATE(o.created_at) = CURDATE()
 GROUP BY p.name
 ORDER BY total_sold DESC;
 
+-- ============================================
+-- Combining order slips and customer name & product details
+-- ============================================
+-- 1. INNER JOINTS
+-- Show orders WITH customer names
+SELECT o.order_number, c.name AS customer, o.status
+FROM orders o
+INNER JOIN customers c ON o.customer_id = c.customer_id;
+
+-- 2. LEFT JOINTS
+SELECT o.order_number, c.name AS customer, o.total_amount
+FROM orders o
+LEFT JOIN customers c ON o.customer_id = c.customer_id;
+
+-- 3. MULTIPLE JOINTS
+SELECT
+    o.order_number,
+    c.name          AS customer,
+    p.name          AS product,
+    oi.quantity,
+    oi.display_target,
+    pay.method      AS paid_by
+FROM orders o
+JOIN customers c    ON o.customer_id  = c.customer_id
+JOIN order_items oi ON o.order_id     = oi.order_id
+JOIN products p     ON oi.product_id  = p.product_id
+JOIN payments pay   ON o.order_id     = pay.order_id;
 
 
